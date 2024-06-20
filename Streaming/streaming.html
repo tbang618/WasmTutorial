@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Streaming WASM</title>
+    </head>
+    <body>
+        <script>
+            var exports;
+            WebAssembly.instantiateStreaming(
+                fetch("maths.wasm"), {}
+            ).then(results => exports = results.instance.exports);
+
+            function run_add() {
+                var a = document.querySelector("#a").value;
+                var b = document.querySelector("#b").value;
+                var sum = exports.addNums(a, b);
+
+                document.querySelector("#out").innerHTML += `${a} + ${b} = ${sum}<br/>`;
+            };
+            
+            function run_sub() {
+                var a = document.querySelector("#a").value;
+                var b = document.querySelector("#b").value;
+                var sum = exports.subNums(a, b);
+
+                document.querySelector("#out").innerHTML += `${a} - ${b} = ${sum}<br/>`;
+            };
+        </script>
+
+        <input type="number" id="a">
+        <input type="number" id="b">
+        <button onclick="run_add()">Plus</button>
+        <button onclick="run_sub()">Minus</button>
+        <p id="out"></p>
+    </body>
+</html>

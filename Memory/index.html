@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Memory in WASM</title>
+    </head>
+
+    <body>
+        <p>Memory in WASM</p>
+        <script>
+            var protoMemory = new WebAssembly.Memory({
+                initial: 256,
+                maximum: 512,
+            });
+            var memory;
+            var exports;
+
+            WebAssembly.instantiateStreaming(fetch("memory.wasm"), 
+                {
+                    js : { mem: memory}
+                }
+            )
+                .then(results => {
+                    exports = results.instance.exports;
+                    memory = results.instance.exports.memory;
+                });
+
+            function run_wasm() {
+                var arr = new Uint32Array(memory.buffer);
+                for (var i = 0; i < 10; i++) {
+                    arr[i] = i * 2;
+                }
+
+                var sum = exports.accumulate(0, 10);
+
+                document.querySelector("#return")
+                    .innerHTML += `${sum}<br>`;
+            }
+
+            function get_string() {
+                var ptr = exports.getString();
+                var got_string = new Uint8Array(memory.buffer, ptr);
+
+                var str = new TextDecoder("utf8").decode(
+                    got_string.slice(0, 13)
+                );
+                console.log(str);
+            }
+        </script>
+
+        <input type="number" id="a">
+        <button onclick="run_wasm()">Accumulate</button>
+        <button onclick="get_string()">Get String</button>
+        <p id="return"></p>
+    </body>
+
+</html>

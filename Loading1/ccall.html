@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Math with WASM via CCALL</title>
+		<script src="maths.js"></script>
+	</head>
+
+	<body>
+		<script>
+			function run_wasm() {
+				var a = document.querySelector("#a").value;
+				var b = document.querySelector("#b").value;
+				var result = Module.ccall(
+					"addNums", 
+					"number", 
+					["number", "number"], 
+					[a, b]);
+				console.log(result);
+			}
+		</script>
+
+		<input type="number" id="a">
+		<input type="number" id="b">
+		<button onclick="run_wasm()">Add!</button>
+	</body>
+</html>
